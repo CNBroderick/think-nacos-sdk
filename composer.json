@@ -1,0 +1,46 @@
+{
+  "name": "topthink/think-nacos-sdk",
+  "description": "thinkphp nacos 2.x sdk for thinkphp ^8.0.3",
+  "license": "Apache-2.0",
+  "version": "0.0.1",
+  "homepage": "https://github.com/CNBroderick/think-nacos-sdk",
+  "authors": [
+    {
+      "name": "CNBroderick",
+      "email": "z@broderick.cn",
+      "homepage": "https://github.com/CNBroderick",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/CNBroderick/think-nacos-sdk/issues",
+    "email": "z@broderick.cn"
+  },
+  "require": {
+    "php": ">=7.4.0 | >=8.0",
+    "topthink/framework": "^8.0",
+    "ext-json": "*",
+    "ext-curl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "think\\": "src"
+    }
+  },
+  "extra": {
+    "think": {
+      "services": [
+        "think\\worker\\Service"
+      ],
+      "config": {
+        "nacos": "src/config/nacos.php"
+      }
+    }
+  },
+  "time": "2023-11-30 15:09:35",
+  "keywords": [
+    "thinkphp",
+    "nacos",
+    "think-nacos-sdk"
+  ]
+}
