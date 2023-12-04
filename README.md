@@ -82,7 +82,7 @@ $config = new \think\sdk\alibaba\nacos\v2\config\NacosConfig::getInstance();
 // 默认通过此方法获取本机内网IP
 $config ->setServerIp(gethostbyname(gethostname()));
 // 如监听端口非80，且配置文件未填写，则需要手动设置
-$config ->setServerPort($port);
+$config ->setServerPort(8080);
 
 $nacos = new \think\sdk\alibaba\nacos\v2\Nacos($config);
 $nacos
