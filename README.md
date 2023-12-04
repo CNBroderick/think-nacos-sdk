@@ -5,7 +5,9 @@ ThinkPHP Nacos 2.x 扩展
 
 ## 安装
 
+### 命令行部署
 composer require topthink/think-nacos-sdk
+> 还未发布，暂时无法使用
 
 ### 手动部署
 
@@ -39,22 +41,42 @@ composer.json 中添加如下配置
 
 ## 配置
 
+### 通过HTTP注册
+
 ```php
-// 设置用户永远执行
-set_time_limit(0);
-// 设置用户永不超时
-ini_set('max_execution_time', '0');
-// 设置用户中断时继续执行
-ignore_user_abort(true);
+public function register_nacos()
+{
+    // 设置用户永远执行
+    set_time_limit(0);
+    // 设置用户永不超时
+    ini_set('max_execution_time', '0');
+    // 设置用户中断时继续执行
+    ignore_user_abort(true);
 
-// 监听配置更改
-\think\Event::listen(
-    \think\sdk\alibaba\nacos\v2\event\NacosConfigChangeEvent::class, 
-    function ($raw_config){
-        dump('nacos config change', $raw_config);
-    }
-);
+    // 获取本机内网IP
+    $ip = gethostbyname(gethostname());
 
+    $ip = $this->request->get('ip', $ip);
+    $port = $this->request->get('port', 80);
+
+    // 具体配置信息见下方
+
+    return '已将' . $ip . ':' . $port . '注册到Nacos。';
+}
+```
+
+### 当填写配置文件时
+```php
+$nacos = new \think\sdk\alibaba\nacos\v2\Nacos()
+    ->register()            // 注册服务到Nacos
+    ->listen()              // 开始监听（每秒查询更改）
+    ->cancelListening()     // 当需要停止监听时，调用
+    ;
+```
+
+### 动态配置
+
+```php
 // 如需动态配置Nacos，请使用此方法获取
 $config = new \think\sdk\alibaba\nacos\v2\config\NacosConfig::getInstance();
 // 默认通过此方法获取本机内网IP
@@ -70,6 +92,17 @@ $nacos
     ;
 // 发送一次心跳
 $nacos->beat();
+```
+
+### 监听配置更改
+
+```php
+\think\Event::listen(
+    \think\sdk\alibaba\nacos\v2\event\NacosConfigChangeEvent::class, 
+    function ($raw_config){
+        dump('nacos config change', $raw_config);
+    }
+);
 ```
 
 启动方式：
@@ -92,3 +125,7 @@ $nacos->beat();
             -response: 全部响应数据类
             -util: 工具类
 ```
+
+## 其他
+
+任何BUG或者建议，欢迎提交issue或者PR。
