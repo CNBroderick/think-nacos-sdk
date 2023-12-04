@@ -14,6 +14,29 @@
 // +----------------------------------------------------------------------
 
 return [
+
+    // 以下是服务配置
+
+    // 服务监听IP，不能填写127.0.0.1的本机地址。如果为空，则通过`gethostbyname(gethostname())`获取
+    'server_ip' => gethostbyname(gethostname()),
+    // 服务监听端口
+    'server_port' => 80,
+    /**
+     * 用于将服务注册到Nacos所需的服务扩展参数，
+     * @see \think\sdk\alibaba\nacos\v2\request\discovery\instance\ns\NacosDiscoveryInstanceRegistrationRequest::$optionalParams SDK源代码：请求类实现
+     * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 官方文档：服务发现->注册实例
+     */
+    'server_params' =>  [
+        'weight' => 1,
+        'enabled' => true,
+        'healthy' => true,
+        'metadata' => [
+            'preserved.register.source' => 'ThinkPHP/8.0.3 think-nacos-sdk/0.0.1'
+        ],
+    ],
+
+    // 以下是Nacos配置
+
     // 启用Nacos
     'enable' => false,
     // 启用Nacos授权认证，如果启用，需要配置用户名和密码

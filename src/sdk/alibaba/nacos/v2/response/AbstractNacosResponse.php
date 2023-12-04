@@ -2,6 +2,7 @@
 
 namespace think\sdk\alibaba\nacos\v2\response;
 
+use think\facade\Log;
 use think\sdk\alibaba\nacos\v2\enum\NacosErrorCodeEnum;
 
 abstract class AbstractNacosResponse
@@ -9,22 +10,23 @@ abstract class AbstractNacosResponse
     protected bool $success;
     protected int $httpCode;
     protected string $message;
-    protected string $response;
+    protected array $response;
     protected string $body;
 
     public function __construct($response, $body)
     {
         $this->httpCode = $response['http_code'];
         $this->success = $this->httpCode == 200;
-        $this->message = 'think-nacos-sdk：请求失败：[' . $response['http_code'] . ']' . (NacosErrorCodeEnum::from($response['http_code'] ?: '未知错误'));
+        $this->message = $this->success ? '' : 'think-nacos-sdk：请求失败：[' . $this->httpCode . ']' . (NacosErrorCodeEnum::from($this->httpCode ?: '未知错误'));
         $this->response = $response;
         $this->body = $body;
     }
 
     public function requireSuccess(): AbstractNacosResponse
     {
-        if ($this -> httpCode !== 200) {
-            abort(500, 'think-nacos-sdk：' . $this -> message);
+        if ($this->httpCode !== 200) {
+            Log::error($this ->message . ' ' . $this->body);
+            abort(500, $this->message);
         }
         return $this;
     }
@@ -44,7 +46,7 @@ abstract class AbstractNacosResponse
         return $this->message;
     }
 
-    public function getResponse(): string
+    public function getResponse(): array
     {
         return $this->response;
     }

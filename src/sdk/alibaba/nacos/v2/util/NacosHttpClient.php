@@ -2,13 +2,14 @@
 
 namespace think\sdk\alibaba\nacos\v2\util;
 
+use think\facade\Log;
+
 class NacosHttpClient
 {
 
-    private string $url;
-
-    private string $body;
-    private array $headers;
+    private string $url = '';
+    private string $body = '';
+    private array $headers = [];
 
     private int $timeout = 30;
 
@@ -88,6 +89,12 @@ class NacosHttpClient
      */
     public function request(string $method): array
     {
+        Log::info('nacos-sdk-request'. json_encode([
+            'url' => $this->url,
+            'method' => $method,
+            'body' => $this->body,
+            'headers' => $this->headers,
+        ]));
         $method = strtoupper($method);
 
         $ch = curl_init();
@@ -132,6 +139,14 @@ class NacosHttpClient
         $response = curl_getinfo($ch);
         curl_close($ch);
 
+        Log::info('nacos-sdk-request'. json_encode([
+                'url' => $this->url,
+                'method' => $method,
+                'body' => $this->body,
+                'headers' => $this->headers,
+                'response_info' => $response,
+                'response_body' => $body,
+            ]));
         return array($response, $body);
     }
 

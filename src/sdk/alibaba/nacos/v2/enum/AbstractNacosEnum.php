@@ -8,6 +8,6 @@ class AbstractNacosEnum
 
     public static function from($code): string
     {
-        return self::$map[$code] ?: '';
+        return array_key_exists($code, static::$map) ? static::$map[$code] ?: '' : '';
     }
 }

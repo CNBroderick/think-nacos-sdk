@@ -7,14 +7,14 @@ use think\sdk\alibaba\nacos\v2\response\common\JsonNacosResponse;
 class NacosDiscoveryServiceListQueryResponse extends JsonNacosResponse
 {
     private int $count;
-    private array $doms;
+    private array $services;
 
 
     public function __construct($response, $body)
     {
         parent::__construct($response, $body);
         $this->count = $this->data['count'];
-        $this->doms = $this->data['doms'];
+        $this->services = $this->data['services'];
     }
 
     public function getCount(): int
@@ -22,9 +22,9 @@ class NacosDiscoveryServiceListQueryResponse extends JsonNacosResponse
         return $this->count;
     }
 
-    public function getDoms(): array
+    public function getServices(): array
     {
-        return $this->doms;
+        return $this->services;
     }
 
 }

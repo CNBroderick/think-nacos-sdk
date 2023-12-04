@@ -8,14 +8,13 @@ use think\sdk\alibaba\nacos\v2\response\common\BoolResultNacosResponse;
 /**
  * 删除 Nacos 上的配置。
  * @package think\sdk\alibaba\nacos\v2\request\config\cs
- * @see https://nacos.io/zh-cn/docs/open-api.html 配置管理->删除配置
+ * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 配置管理->删除配置
  */
 class NacosConfigDeleteRequest extends AbstractNacosRequest
 {
     protected string $requestName = '配置管理->删除配置';
     protected string $uri = '/nacos/v1/cs/configs';
     protected string $method = 'DELETE';
-    protected bool $is_param_in_body = true;
 
     protected array $requireParams = [
         'dataId' => '配置ID',
@@ -23,7 +22,8 @@ class NacosConfigDeleteRequest extends AbstractNacosRequest
     ];
 
     protected array $optionalParams = [
-        'tenant' => '租户信息，对应 Nacos 的命名空间ID字段',
+        'namespaceId' => "命名空间，默认为public与 ''相同",
+        'tag' => '标签',
     ];
 
 
@@ -52,12 +52,23 @@ class NacosConfigDeleteRequest extends AbstractNacosRequest
     }
 
     /**
-     * 租户信息，对应 Nacos 的命名空间ID字段
-     * @param string $tenant
-     * @return void
+     * 命名空间，默认为public与 ''相同
+     * @param string $namespaceId
+     * @return $this
      */
-    public function paramTenant(string $tenant): NacosConfigDeleteRequest {
-        self::param('tenant', $tenant);
+    public function paramNamespaceId(string $namespaceId): NacosConfigDeleteRequest
+    {
+        self::param('namespaceId', $namespaceId);
+        return $this;
+    }
+
+    /**
+     * 标签
+     * @param string $tag
+     * @return $this
+     */
+    public function paramTag(string $tag): NacosConfigDeleteRequest{
+        self::param('tag', $tag);
         return $this;
     }
 }

@@ -2,17 +2,19 @@
 
 namespace think\sdk\alibaba\nacos\v2\response\auth;
 
-use think\sdk\alibaba\nacos\v2\response\common\JsonNacosResponse;
+use think\sdk\alibaba\nacos\v2\response\AbstractNacosResponse;
 
-class NacosAuthLoginResponse extends JsonNacosResponse
+class NacosAuthLoginResponse extends AbstractNacosResponse
 {
     private string $accessToken;
     private int $tokenTtl;
     private bool $globalAdmin;
+    private array $data;
 
     public function __construct($response, $body)
     {
         parent::__construct($response, $body);
+        $this->data = json_decode($body, true);
 
         $this->accessToken = $this->data['accessToken'];
         $this->tokenTtl = $this->data['tokenTtl'];

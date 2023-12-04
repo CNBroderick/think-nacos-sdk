@@ -8,7 +8,7 @@ use think\sdk\alibaba\nacos\v2\response\discovery\system\NacosDiscoverySystemOpe
 /**
  * 查看当前集群Server列表
  * @package think\sdk\alibaba\nacos\v2\request\discovery\system
- * @see https://nacos.io/zh-cn/docs/open-api.html 服务发现->查看当前集群Server列表
+ * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 服务发现->查看当前集群Server列表
  */
 class NacosDiscoverySystemOperatorServersQueryRequest extends AbstractNacosRequest
 {
@@ -27,7 +27,7 @@ class NacosDiscoverySystemOperatorServersQueryRequest extends AbstractNacosReque
     public function request(array $addition_params = []): NacosDiscoverySystemOperatorServersQueryResponse
     {
         list($response, $response_body) = $this->doRequest($addition_params);
-        return new NacosDiscoverySystemOperatorServersQueryResponse($response_body, $response);
+        return new NacosDiscoverySystemOperatorServersQueryResponse($response, $response_body);
     }
     
     /**

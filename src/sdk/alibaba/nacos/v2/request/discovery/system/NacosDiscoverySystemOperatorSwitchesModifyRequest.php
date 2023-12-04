@@ -8,13 +8,13 @@ use think\sdk\alibaba\nacos\v2\response\common\OkResultNacosResponse;
 /**
  * 查询系统开关
  * @package think\sdk\alibaba\nacos\v2\request\discovery\system
- * @see https://nacos.io/zh-cn/docs/open-api.html 服务发现->查询系统开关
+ * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 服务发现->查询系统开关
  */
 class NacosDiscoverySystemOperatorSwitchesModifyRequest extends AbstractNacosRequest
 {
     protected string $requestName = '服务发现->查询系统开关';
 
-    protected string $uri = '/nacos/v1/ns/operator/switches';
+    protected string $uri = '/nacos/v2/ns/operator/switches';
     protected string $method = 'GET';
 
     protected array $requireParams = [
@@ -38,7 +38,7 @@ class NacosDiscoverySystemOperatorSwitchesModifyRequest extends AbstractNacosReq
     public function request(array $addition_params = []): OkResultNacosResponse
     {
         list($response, $response_body) = $this->doRequest($addition_params);
-        return new OkResultNacosResponse($response_body, $response);
+        return new OkResultNacosResponse($response, $response_body);
     }
     
     /**

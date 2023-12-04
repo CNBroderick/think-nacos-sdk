@@ -2,6 +2,7 @@
 
 namespace think\sdk\alibaba\nacos\v2\request\auth;
 
+use think\facade\Log;
 use think\sdk\alibaba\nacos\v2\request\AbstractNacosRequest;
 use think\sdk\alibaba\nacos\v2\response\auth\NacosAuthLoginResponse;
 
@@ -20,6 +21,8 @@ class NacosAuthLoginRequest extends AbstractNacosRequest
         'username' => '用户名',
         'password' => '密码',
     ];
+    protected bool $withAccessToken = false;
+    protected bool $is_param_in_body = true;
 
     
 
@@ -29,15 +32,18 @@ class NacosAuthLoginRequest extends AbstractNacosRequest
      */
     public function __construct(string $username = 'nacos', string $password = 'nacos')
     {
+        Log::info('NacosAuthLoginRequest build param' );
         self::build_params([
             'username' => $username,
             'password' => $password,
         ]);
+        Log::info('NacosAuthLoginRequest init' );
     }
 
     public function request(array $addition_params = []): NacosAuthLoginResponse
     {
         list($response, $body) = $this->doRequest($addition_params);
+        Log::info('NacosAuthLoginRequest end request ' . $body);
         return new NacosAuthLoginResponse($response, $body);
     }
 

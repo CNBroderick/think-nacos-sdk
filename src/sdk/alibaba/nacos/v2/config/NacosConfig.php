@@ -52,6 +52,20 @@ class NacosConfig
 
     private static $instance;
 
+
+    /** 服务监听IP，不能填写127.0.0.1的本机地址。如果为空，则通过`gethostbyname(gethostname())`获取 */
+    private string $server_ip;
+
+    /** 服务监听端口 */
+    private int $server_port;
+
+    /**
+     * 用于将服务注册到Nacos所需的服务扩展参数，
+     * @see \think\sdk\alibaba\nacos\v2\request\discovery\instance\ns\NacosDiscoveryInstanceRegistrationRequest::$optionalParams SDK源代码：请求类实现
+     * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 官方文档：服务发现->注册实例
+     */
+    private array $server_params;
+
     /**
      * @return mixed
      */
@@ -61,8 +75,11 @@ class NacosConfig
             self::$instance = new NacosConfig();
             self::$instance->reload();
             $cacheKey = self::$instance->getCacheKey('config');
-            $config = json_decode(Cache::get($cacheKey), true);
-            if ($config) self::$instance->reload($config);
+            $cache = Cache::get($cacheKey);
+            if ($cache) {
+                $config = json_decode($cache, true);
+                if ($config) self::$instance->reload($config);
+            }
         }
         return self::$instance;
     }
@@ -76,7 +93,7 @@ class NacosConfig
         $config = $config ?: Config::get('nacos');
 
         $this->enable = $config['enable'] ?: false;
-        $this->enableAuth = $config['enableAuth'] ?: true;
+        $this->enableAuth = !array_key_exists('enableAuth', $config) || !!$config['enableAuth'];
         $this->name = $config['name'] ?: 'think-nacos';
         $this->host = $config['host'] ?: '127.0.0.1';
         $this->port = intval($config['port']) ?: 8848;
@@ -88,8 +105,18 @@ class NacosConfig
         $this->dataId = $config['dataId'] ?: '';
         $this->group = $config['group'] ?: 'DEFAULT_GROUP';
         $this->logLevel = $config['logLevel'] ?: 'INFO';
-        $this->isDebug = $config['isDebug'] ?: false;
+        $this->isDebug = !array_key_exists('isDebug', $config) && !!$config['isDebug'];
 
+        $this ->server_ip = $config['server_ip'] ?: gethostbyname(gethostname());
+        $this ->server_port = $config['server_port'] ?: 80;
+        $this ->server_params = $config['server_params'] ?: [
+            'weight' => 1,
+            'enabled' => true,
+            'healthy' => true,
+            'metadata' => [
+                'preserved.register.source' => 'ThinkPHP/8.0.3 think-nacos-sdk/0.0.1'
+            ],
+        ];
     }
 
     public function getCacheKey($type): string
@@ -295,5 +322,37 @@ class NacosConfig
         return $this;
     }
 
+    public function getServerIp(): string
+    {
+        return $this->server_ip;
+    }
+
+    public function setServerIp(string $server_ip): NacosConfig
+    {
+        $this->server_ip = $server_ip;
+        return $this;
+    }
+
+    public function getServerPort(): int
+    {
+        return $this->server_port;
+    }
+
+    public function setServerPort(int $server_port): NacosConfig
+    {
+        $this->server_port = $server_port;
+        return $this;
+    }
+
+    public function getServerParams(): array
+    {
+        return $this->server_params;
+    }
+
+    public function setServerParams(array $server_params): NacosConfig
+    {
+        $this->server_params = $server_params;
+        return $this;
+    }
 
 }

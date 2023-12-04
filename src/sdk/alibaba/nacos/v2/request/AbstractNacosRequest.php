@@ -13,12 +13,12 @@ abstract class AbstractNacosRequest
     /**
      * @var string 请求名称
      */
-    protected string $requestName;
+    protected string $requestName = '';
 
     /**
      * @var string 请求路径，以/开头
      */
-    protected string $uri;
+    protected string $uri = '';
 
     /**
      * @var string 请求方法 GET | POST | PUT | DELETE
@@ -47,7 +47,7 @@ abstract class AbstractNacosRequest
      */
     protected bool $withAccessToken = true;
 
-    private NacosConfig $config;
+    private ?NacosConfig $config = null;
 
     protected bool $is_param_in_body = false;
 
@@ -68,16 +68,15 @@ abstract class AbstractNacosRequest
 
     public function doRequest(array $addition_params = []): array
     {
-        $this->config = NacosConfig::getInstance();
+        if (!$this->config) $this->setConfig(NacosConfig::getInstance());
 
         $url = $this->get_server_address();
-        if (strpos('/', $this->uri) !== 0) $url .= '/';
         $url .= $this->uri;
 
         $request = array_merge($this->params, $addition_params);
         $query = $this->is_param_in_body ? [] : $request;
         $body = $this->is_param_in_body ? $request : '';
-        if ($this->config->isEnableAuth()) {
+        if ($this->withAccessToken) {
             $query['accessToken'] = NacosTokenManager::getInstance()->getAccessToken();
         }
 
@@ -96,15 +95,19 @@ abstract class AbstractNacosRequest
      */
     protected function build_params(array $params = []): void
     {
-        foreach ($this->requireParams as $param_key => $param_value) {
-            array_key_exists($param_key, $params) or abort(500, 'think-nacos-sdk：' . $this->requestName . '[' . $this->uri . ']缺少必填参数：' . $param_key . '。');
+        foreach ($this->requireParams as $param_key => $param_label) {
+            array_key_exists($param_key, $params) or abort(500, 'think-nacos-sdk：' . $this->requestName . '[' . $this->uri . ']缺少必填参数：' . $param_key . '（' . $param_label . '）。');
+            $param_value = $params[$param_key];
             $this->params[$param_key] = is_array($param_value) ? json_encode($param_value) : $param_value;
         }
 
-        foreach ($this->optionalParams as $param_key => $param_value) {
+        foreach ($this->optionalParams as $param_key => $param_label) {
             // 如果参数已经在必填参数中存在，则不再添加
             if (array_key_exists($param_key, $this->requireParams)) continue;
-            if (array_key_exists($param_key, $params)) $this->params[$param_key] = is_array($param_value) ? json_encode($param_value) : $param_value;
+            if (array_key_exists($param_key, $params)) {
+                $param_value = $params[$param_key];
+                $this->params[$param_key] = is_array($param_value) ? json_encode($param_value) : $param_value;
+            }
         }
     }
 

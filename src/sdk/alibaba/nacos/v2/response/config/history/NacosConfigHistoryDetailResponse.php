@@ -6,19 +6,59 @@ use think\sdk\alibaba\nacos\v2\response\common\JsonNacosResponse;
 
 class NacosConfigHistoryDetailResponse extends JsonNacosResponse
 {
+    /**
+     * @var int 配置id
+     */
     private int $id;
+    /**
+     * @var int 上次修改的配置id
+     */
     private int $lastId;
+    /**
+     * @var string 配置名
+     */
     private string $dataId;
+    /**
+     * @var string 配置分组
+     */
     private string $group;
+    /**
+     * @var string 租户信息（命名空间）
+     */
     private string $tenant;
+    /**
+     * @var string 应用名
+     */
     private string $appName;
+    /**
+     * @var string 配置内容的md5值
+     */
     private string $md5;
+    /**
+     * @var string 配置内容
+     */
     private string $content;
+    /**
+     * @var string 源ip
+     */
     private string $srcIp;
+    /**
+     * @var string 源用户
+     */
     private string $srcUser;
+    /**
+     * @var string 操作类型
+     */
     private string $opType;
+    /**
+     * @var string 创建时间
+     */
     private string $createdTime;
+    /**
+     * @var string|mixed 上次修改时间
+     */
     private string $lastModifiedTime;
+    private string $encryptedDataKey;
 
     public function __construct($response, $body)
     {
@@ -36,6 +76,7 @@ class NacosConfigHistoryDetailResponse extends JsonNacosResponse
         $this->opType = $this->data['opType'];
         $this->createdTime = $this->data['createdTime'];
         $this->lastModifiedTime = $this->data['lastModifiedTime'];
+        $this->encryptedDataKey = $this->data['encryptedDataKey'];
     }
 
     public function getId(): int
@@ -101,6 +142,11 @@ class NacosConfigHistoryDetailResponse extends JsonNacosResponse
     public function getLastModifiedTime(): string
     {
         return $this->lastModifiedTime;
+    }
+
+    public function getEncryptedDataKey(): string
+    {
+        return $this->encryptedDataKey;
     }
 
 }

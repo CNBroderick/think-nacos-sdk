@@ -1,6 +1,6 @@
 <?php
 
-namespace think\sdk\alibaba\nacos\v2\request\discovery\instance;
+namespace think\sdk\alibaba\nacos\v2\request\discovery\instance\ns;
 
 use think\sdk\alibaba\nacos\v2\request\AbstractNacosRequest;
 use think\sdk\alibaba\nacos\v2\response\discovery\instance\NacosDiscoveryInstanceQueryResponse;
@@ -8,12 +8,12 @@ use think\sdk\alibaba\nacos\v2\response\discovery\instance\NacosDiscoveryInstanc
 /**
  * 查询一个服务下个某个实例详情。
  * @package think\sdk\alibaba\nacos\v2\request\discovery\instance
- * @see https://nacos.io/zh-cn/docs/open-api.html 服务发现->查询实例详情
+ * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 服务发现->查询实例详情
  */
 class NacosDiscoveryInstanceQueryRequest extends AbstractNacosRequest
 {
     protected string $requestName = '服务发现->修改实例';
-    protected string $uri = '/nacos/v1/ns/instance';
+    protected string $uri = '/nacos/v2/ns/instance';
     protected string $method = 'GET';
     
 
@@ -23,11 +23,9 @@ class NacosDiscoveryInstanceQueryRequest extends AbstractNacosRequest
         'port' => '服务实例port',
     ];
     protected array $optionalParams = [
-        'groupName' => '分组名',
-        'namespaceId' => '命名空间ID',
-        'cluster' => '集群名称',
-        'healthyOnly' => '是否只返回健康实例',
-        'ephemeral' => '是否临时实例',
+        'groupName' => '分组名，默认为DEFAULT_GROUP',
+        'namespaceId' => '命名空间Id，默认为public',
+        'cluster' => '集群名称，默认为DEFAULT',
     ];
 
     /**
@@ -47,11 +45,11 @@ class NacosDiscoveryInstanceQueryRequest extends AbstractNacosRequest
     public function request(array $addition_params = []): NacosDiscoveryInstanceQueryResponse
     {
         list($response, $response_body) = $this->doRequest($addition_params);
-        return new NacosDiscoveryInstanceQueryResponse($response_body, $response);
+        return new NacosDiscoveryInstanceQueryResponse($response, $response_body);
     }
 
     /**
-     * 分组名
+     * 分组名，默认为DEFAULT_GROUP
      * @param string $groupName
      * @return $this
      */
@@ -62,7 +60,7 @@ class NacosDiscoveryInstanceQueryRequest extends AbstractNacosRequest
     }
 
     /**
-     * 命名空间ID
+     * 命名空间Id，默认为public
      * @param string $namespaceId
      * @return $this
      */
@@ -73,7 +71,7 @@ class NacosDiscoveryInstanceQueryRequest extends AbstractNacosRequest
     }
 
     /**
-     * 集群名称
+     * 集群名
      * @param string $cluster
      * @return $this
      */
@@ -83,25 +81,4 @@ class NacosDiscoveryInstanceQueryRequest extends AbstractNacosRequest
         return $this;
     }
 
-    /**
-     * 是否只返回健康实例
-     * @param bool $healthyOnly
-     * @return $this
-     */
-    public function paramHealthyOnly(bool $healthyOnly): NacosDiscoveryInstanceQueryRequest
-    {
-        self::param('healthyOnly', $healthyOnly);
-        return $this;
-    }
-
-    /**
-     * 是否临时实例
-     * @param bool $ephemeral
-     * @return $this
-     */
-    public function paramEphemeral(bool $ephemeral): NacosDiscoveryInstanceQueryRequest
-    {
-        self::param('ephemeral', $ephemeral);
-        return $this;
-    }
 }

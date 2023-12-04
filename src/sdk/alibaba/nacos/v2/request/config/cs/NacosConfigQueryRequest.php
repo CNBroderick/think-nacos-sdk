@@ -3,17 +3,17 @@
 namespace think\sdk\alibaba\nacos\v2\request\config\cs;
 
 use think\sdk\alibaba\nacos\v2\request\AbstractNacosRequest;
-use think\sdk\alibaba\nacos\v2\response\common\StringNacosResponse;
+use think\sdk\alibaba\nacos\v2\response\common\JsonNacosResponse;
 
 /**
  * 获取Nacos上的配置。
  * @package think\sdk\alibaba\nacos\v2\request\config\cs
- * @see https://nacos.io/zh-cn/docs/open-api.html 配置管理->获取配置
+ * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 配置管理->获取配置
  */
 class NacosConfigQueryRequest extends AbstractNacosRequest
 {
     protected string $requestName = '配置管理->获取配置';
-    protected string $uri = '/nacos/v1/cs/configs';
+    protected string $uri = '/nacos/v2/cs/config';
     protected string $method = 'GET';
 
     protected array $requireParams = [
@@ -21,7 +21,8 @@ class NacosConfigQueryRequest extends AbstractNacosRequest
         'group' => '配置分组',
     ];
     protected array $optionalParams = [
-        'tenant' => '租户信息，对应 Nacos 的命名空间ID字段',
+        'namespaceId' => '命名空间，默认为public与 \'\'相同',
+        'tag' => '标签',
     ];
 
     /**
@@ -36,19 +37,19 @@ class NacosConfigQueryRequest extends AbstractNacosRequest
         ]);
     }
 
-    public function request(array $addition_params = []): StringNacosResponse
+    public function request(array $addition_params = []): JsonNacosResponse
     {
         list($response, $body) = $this->doRequest($addition_params);
-        return new StringNacosResponse($response, $body);
+        return new JsonNacosResponse($response, $body);
     }
 
     /**
      * 租户信息，对应 Nacos 的命名空间ID字段
-     * @param string $tenant
-     * @return void
+     * @param string $namespaceId
+     * @return NacosConfigQueryRequest
      */
-    public function paramTenant(string $tenant): NacosConfigQueryRequest {
-        self::param('tenant', $tenant);
+    public function paramNamespaceId(string $namespaceId): NacosConfigQueryRequest {
+        self::param('namespaceId', $namespaceId);
         return $this;
     }
 }

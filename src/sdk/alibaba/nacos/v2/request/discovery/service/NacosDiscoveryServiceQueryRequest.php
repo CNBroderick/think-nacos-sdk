@@ -8,22 +8,21 @@ use think\sdk\alibaba\nacos\v2\response\discovery\service\NacosDiscoveryServiceQ
 /**
  * 查询一个服务
  * @package think\sdk\alibaba\nacos\v2\request\discovery\service
- * @see https://nacos.io/zh-cn/docs/open-api.html 服务发现->查询服务
+ * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 服务发现->查询服务
  */
 class NacosDiscoveryServiceQueryRequest extends AbstractNacosRequest
 {
     protected string $requestName = '服务发现->查询服务';
 
-    protected string $uri = '/nacos/v1/ns/service';
+    protected string $uri = '/nacos/v2/ns/service';
     protected string $method = 'GET';
 
     protected array $requireParams = [
-        'pageNo' => '当前页码',
-        'pageSize' => '分页大小',
+        'serviceName' => '服务名',
     ];
     protected array $optionalParams = [
-        'groupName' => '分组名',
-        'namespaceId' => '命名空间ID',
+        'groupName' => '分组名，默认为DEFAULT_GROUP',
+        'namespaceId' => '命名空间Id，默认为public',
     ];
     
 
@@ -37,15 +36,14 @@ class NacosDiscoveryServiceQueryRequest extends AbstractNacosRequest
         ]);
     }
 
-
     public function request(array $addition_params = []): NacosDiscoveryServiceQueryResponse
     {
         list($response, $response_body) = $this->doRequest($addition_params);
-        return new NacosDiscoveryServiceQueryResponse($response_body, $response);
+        return new NacosDiscoveryServiceQueryResponse($response, $response_body);
     }
 
     /**
-     * 分组名
+     * 分组名，默认为DEFAULT_GROUP
      * @param string $groupName
      * @return $this
      */
@@ -55,7 +53,7 @@ class NacosDiscoveryServiceQueryRequest extends AbstractNacosRequest
     }
     
     /**
-     * 命名空间ID
+     * 命名空间Id，默认为public
      * @param string $namespaceId
      * @return $this
      */

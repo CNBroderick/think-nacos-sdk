@@ -7,26 +7,69 @@ ThinkPHP Nacos 2.x 扩展
 
 composer require topthink/think-nacos-sdk
 
+### 手动部署
+
+composer.json 中添加如下配置
+
+1. 仓库
+    ```json
+    {
+      "repositories": [
+        {
+          "type": "path",
+          "url": "path/to/think-nacos-sdk",
+          "options": {
+            "versions": {
+              "topthink/think-nacos-sdk": "0.0.1"
+            }
+          }
+        }
+      ]
+    }
+    ```
+
+2. 依赖
+    ```json
+    {
+      "require": {
+        "topthink/think-nacos-sdk": "0.0.1"
+      }
+    }
+    ```
+
 ## 配置
+
 ```php
-$nacos = new \think\sdk\alibaba\nacos\v2\Nacos();
-// 服务器内网或公网地址，服务器端口。不要使用本机地址
-$nacos ->register('10.0.0.1', '80');
+// 设置用户永远执行
+set_time_limit(0);
+// 设置用户永不超时
+ini_set('max_execution_time', '0');
+// 设置用户中断时继续执行
+ignore_user_abort(true);
 
-// 可以通过以下方式更改配置，支持链式调用，最后调用saveConfig()方法保存配置
-$nacos 
-    ->getConfig()
-    ->setHost('nacos.example.com')
-    ->setPort(8848)
-    ->saveConfig();
+// 监听配置更改
+\think\Event::listen(
+    \think\sdk\alibaba\nacos\v2\event\NacosConfigChangeEvent::class, 
+    function ($raw_config){
+        dump('nacos config change', $raw_config);
+    }
+);
 
-$shutdown = $nacos ->listen(function ($raw_config){
-    // 配置更新回调
-    // $raw_config 为原始配置，字符串格式，需要自行解析
-    // 业务逻辑
-}, 30000 /* 监听间隔，单位毫秒 */);
-// 当需要停止监听时，调用
-$shutdown();
+// 如需动态配置Nacos，请使用此方法获取
+$config = new \think\sdk\alibaba\nacos\v2\config\NacosConfig::getInstance();
+// 默认通过此方法获取本机内网IP
+$config ->setServerIp(gethostbyname(gethostname()));
+// 如监听端口非80，且配置文件未填写，则需要手动设置
+$config ->setServerPort($port);
+
+$nacos = new \think\sdk\alibaba\nacos\v2\Nacos($config);
+$nacos
+    ->register()            // 注册服务到Nacos
+    ->listen()              // 开始监听（每秒查询更改）
+    ->cancelListening()     // 当需要停止监听时，调用
+    ;
+// 发送一次心跳
+$nacos->beat();
 ```
 
 启动方式：

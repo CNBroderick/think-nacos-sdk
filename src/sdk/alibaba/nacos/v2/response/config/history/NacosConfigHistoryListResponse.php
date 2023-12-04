@@ -4,7 +4,7 @@ namespace think\sdk\alibaba\nacos\v2\response\config\history;
 
 use think\sdk\alibaba\nacos\v2\response\common\JsonNacosResponse;
 
-class NacosConfigHistoryQueryResponse extends JsonNacosResponse
+class NacosConfigHistoryListResponse extends JsonNacosResponse
 {
     private int $totalCount;
     private int $pageNumber;
@@ -19,7 +19,7 @@ class NacosConfigHistoryQueryResponse extends JsonNacosResponse
         $this->pagesAvailable = $this->data['pagesAvailable'];
         $this->pageItems = [];
         foreach ($this->data['pageItems'] as $pageItem) {
-            $pageItem[] = new NacosConfigHistoryQueryResponsePageItem($pageItem);
+            $pageItem[] = new NacosConfigHistoryListResponsePageItem($pageItem);
         }
     }
 

@@ -6,15 +6,15 @@ use think\sdk\alibaba\nacos\v2\request\AbstractNacosRequest;
 use think\sdk\alibaba\nacos\v2\response\common\BoolResultNacosResponse;
 
 /**
- * 修改命名空间。
+ * 删除指定命名空间
  * @package think\sdk\alibaba\nacos\v2\request\discovery\instance
- * @see https://nacos.io/zh-cn/docs/open-api.html 命名空间->修改命名空间
+ * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 命名空间->修改命名空间
  */
 class NacosNamespaceDeleteRequest extends AbstractNacosRequest
 {
     protected string $requestName = '命名空间->删除命名空间';
-    protected string $uri = '/nacos/v1/console/namespaces';
-    protected string $method = 'PUT';
+    protected string $uri = '/nacos/v2/console/namespace';
+    protected string $method = 'DELETE';
     protected bool $is_param_in_body = true;
 
     protected array $requireParams = [
@@ -22,18 +22,17 @@ class NacosNamespaceDeleteRequest extends AbstractNacosRequest
     ];
     protected array $optionalParams = [];
 
-    public function __construct(string $namespace)
+    public function __construct(string $namespaceId)
     {
         self::build_params([
-            'namespace' => $namespace,
+            'namespaceId' => $namespaceId,
         ]);
     }
-
 
     public function request(array $addition_params = []): BoolResultNacosResponse
     {
         list($response, $response_body) = $this->doRequest($addition_params);
-        return new BoolResultNacosResponse($response_body, $response);
+        return new BoolResultNacosResponse($response, $response_body);
     }
 
 }

@@ -8,7 +8,7 @@ use think\sdk\alibaba\nacos\v2\response\discovery\system\NacosDiscoverySystemRaf
 /**
  * 查看当前集群leader
  * @package think\sdk\alibaba\nacos\v2\request\discovery\system
- * @see https://nacos.io/zh-cn/docs/open-api.html 服务发现->查看当前集群leader
+ * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 服务发现->查看当前集群leader
  */
 class NacosDiscoverySystemRaftLeaderQueryRequest extends AbstractNacosRequest
 {
@@ -24,7 +24,7 @@ class NacosDiscoverySystemRaftLeaderQueryRequest extends AbstractNacosRequest
     public function request(array $addition_params = []): NacosDiscoverySystemRaftLeaderQueryResponse
     {
         list($response, $response_body) = $this->doRequest($addition_params);
-        return new NacosDiscoverySystemRaftLeaderQueryResponse($response_body, $response);
+        return new NacosDiscoverySystemRaftLeaderQueryResponse($response, $response_body);
     }
 
 }

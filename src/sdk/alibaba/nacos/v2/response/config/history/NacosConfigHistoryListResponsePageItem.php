@@ -2,7 +2,7 @@
 
 namespace think\sdk\alibaba\nacos\v2\response\config\history;
 
-class NacosConfigHistoryQueryResponsePageItem
+class NacosConfigHistoryListResponsePageItem
 {
     private int $id;
     private int $lastId;

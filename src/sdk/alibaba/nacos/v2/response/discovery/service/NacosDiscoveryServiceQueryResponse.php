@@ -6,33 +6,57 @@ use think\sdk\alibaba\nacos\v2\response\common\JsonNacosResponse;
 
 class NacosDiscoveryServiceQueryResponse extends JsonNacosResponse
 {
-    private array $metadata;
+
+    /**
+     * @var String 命名空间
+     */
+    private string $namespace;
+    /**
+     * @var String 分组名
+     */
     private string $groupName;
-    private string $namespaceId;
-    private string $name;
+    /**
+     * @var String 服务名
+     */
+    private string $serviceName;
+    /**
+     * @var array 集群信息
+     */
+    private array $clusterMap;
+    /**
+     * @var array 服务元数据
+     */
+    private array $metadata;
+    /**
+     * @var float 保护阈值
+     */
+    private float $protectThreshold;
+    /**
+     * @var array 访问策略
+     */
     private array $selector;
-    private int $protectThreshold;
-    private array $clusters;
+    /**
+     * @var bool 是否为临时实例
+     */
+    private bool $ephemeral;
 
 
     public function __construct($response, $body)
     {
         parent::__construct($response, $body);
-        $this->metadata = $this->data['metadata'];
+        $this->namespace = $this->data['namespace'];
         $this->groupName = $this->data['groupName'];
-        $this->namespaceId = $this->data['namespaceId'];
-        $this->name = $this->data['$name'];
-        $this->selector = $this->data['selector'];
+        $this->serviceName = $this->data['serviceName'];
+        $this->clusterMap = $this->data['clusterMap'];
+        $this->metadata = $this->data['metadata'];
         $this->protectThreshold = $this->data['protectThreshold'];
-        $this->clusters = [];
-        foreach ($this->data['clusters'] as $cluster) {
-            $this->clusters [] = new NacosDiscoveryServiceQueryResponseCluster($cluster);
-        }
+        $this->selector = $this->data['selector'];
+        $this->ephemeral = $this->data['ephemeral'];
     }
 
-    public function getMetadata(): array
+    public function getNamespace(): string
     {
-        return $this->metadata;
+        return $this->namespace;
     }
 
     public function getGroupName(): string
@@ -40,14 +64,24 @@ class NacosDiscoveryServiceQueryResponse extends JsonNacosResponse
         return $this->groupName;
     }
 
-    public function getNamespaceId(): string
+    public function getServiceName(): string
     {
-        return $this->namespaceId;
+        return $this->serviceName;
     }
 
-    public function getName(): string
+    public function getClusterMap(): array
     {
-        return $this->name;
+        return $this->clusterMap;
+    }
+
+    public function getMetadata(): array
+    {
+        return $this->metadata;
+    }
+
+    public function getProtectThreshold(): float
+    {
+        return $this->protectThreshold;
     }
 
     public function getSelector(): array
@@ -55,13 +89,8 @@ class NacosDiscoveryServiceQueryResponse extends JsonNacosResponse
         return $this->selector;
     }
 
-    public function getProtectThreshold(): int
+    public function isEphemeral(): bool
     {
-        return $this->protectThreshold;
-    }
-
-    public function getClusters(): array
-    {
-        return $this->clusters;
+        return $this->ephemeral;
     }
 }

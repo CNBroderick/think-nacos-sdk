@@ -8,12 +8,12 @@ use think\sdk\alibaba\nacos\v2\response\common\BoolResultNacosResponse;
 /**
  * 发布 Nacos 上的配置。
  * @package think\sdk\alibaba\nacos\v2\request\config\cs
- * @see https://nacos.io/zh-cn/docs/open-api.html 配置管理->发布配置
+ * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 配置管理->发布配置
  */
 class NacosConfigPublishRequest extends AbstractNacosRequest
 {
     protected string $requestName = '配置管理->获取配置';
-    protected string $uri = '/nacos/v1/cs/configs';
+    protected string $uri = '/nacos/v2/cs/config';
     protected string $method = 'POST';
     protected bool $is_param_in_body = true;
 
@@ -24,8 +24,16 @@ class NacosConfigPublishRequest extends AbstractNacosRequest
     ];
 
     protected array $optionalParams = [
-        'tenant' => '租户信息，对应 Nacos 的命名空间ID字段',
+        'namespaceId' => "命名空间，默认为public与 ''相同",
+        'tag' => '标签',
+        'appName' => '应用名',
+        'srcUser' => '源用户',
+        'configTags' => '配置标签列表，可多个，逗号分隔',
+        'desc' => '配置描述',
+        'use' => '-',
+        'effect' => '-',
         'type' => '配置类型',
+        'schema' => '-',
     ];
 
 
@@ -55,23 +63,107 @@ class NacosConfigPublishRequest extends AbstractNacosRequest
     }
 
     /**
-     * 租户信息，对应 Nacos 的命名空间ID字段
-     * @param string $tenant
-     * @return void
+     * 命名空间，默认为public与 ''相同
+     * @param string $namespaceId
+     * @return $this
      */
-    public function paramTenant(string $tenant): NacosConfigPublishRequest {
-        self::param('tenant', $tenant);
+    public function paramNamespaceId(string $namespaceId): NacosConfigPublishRequest
+    {
+        self::param('namespaceId', $namespaceId);
+        return $this;
+    }
+
+    /**
+     * 标签
+     * @param string $tag
+     * @return $this
+     */
+    public function paramTag(string $tag): NacosConfigPublishRequest{
+        self::param('tag', $tag);
+        return $this;
+    }
+
+    /**
+     * 应用名
+     * @param string $appName
+     * @return $this
+     */
+    public function paramAppName(string $appName): NacosConfigPublishRequest
+    {
+        self::param('appName', $appName);
+        return $this;
+    }
+
+    /**
+     * 源用户
+     * @param string $srcUser
+     * @return $this
+     */
+    public function paramSrcUser(string $srcUser): NacosConfigPublishRequest{
+        self::param('srcUser', $srcUser);
+        return $this;
+    }
+
+    /**
+     * 配置标签列表，可多个，逗号分隔
+     * @param string $configTags
+     * @return $this
+     */
+    public function paramConfigTags(string $configTags): NacosConfigPublishRequest
+    {
+        self::param('configTags', $configTags);
+        return $this;
+    }
+
+    /**
+     * 配置描述
+     * @param string $desc
+     * @return $this
+     */
+    public function paramDesc(string $desc): NacosConfigPublishRequest{
+        self::param('desc', $desc);
+        return $this;
+    }
+
+    /**
+     * -
+     * @param string $use
+     * @return $this
+     */
+    public function paramUse(string $use): NacosConfigPublishRequest
+    {
+        self::param('use', $use);
+        return $this;
+    }
+
+    /**
+     * -
+     * @param string $effect
+     * @return $this
+     */
+    public function paramEffect(string $effect): NacosConfigPublishRequest
+    {
+        self::param('effect', $effect);
         return $this;
     }
 
     /**
      * 配置类型
      * @param string $type
-     * @return void
+     * @return $this
      */
-    public function paramType(string $type): NacosConfigPublishRequest {
+    public function paramType(string $type): NacosConfigPublishRequest{
         self::param('type', $type);
         return $this;
     }
 
+    /**
+     * -
+     * @param string $schema
+     * @return $this
+     */
+    public function paramSchema(string $schema): NacosConfigPublishRequest{
+        self::param('schema', $schema);
+        return $this;
+    }
 }

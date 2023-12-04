@@ -11,7 +11,8 @@ class StringNacosResponse extends AbstractNacosResponse
     public function __construct($response, $body)
     {
         parent::__construct($response, $body);
-        $this->data = $body;
+        if (is_string($body)) $this->data = $body;
+        else if ($body) $this->data = $body->__toString();
     }
 
     public function getData(): string

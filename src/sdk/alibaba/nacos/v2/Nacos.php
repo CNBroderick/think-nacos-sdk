@@ -2,130 +2,173 @@
 
 namespace think\sdk\alibaba\nacos\v2;
 
+use think\facade\Event;
+use think\facade\Log;
 use think\sdk\alibaba\nacos\v2\auth\NacosTokenManager;
 use think\sdk\alibaba\nacos\v2\config\NacosConfig;
-use think\sdk\alibaba\nacos\v2\request\config\cs\NacosConfigListenRequest;
-use think\sdk\alibaba\nacos\v2\request\discovery\instance\NacosDiscoveryInstanceBeatRequest;
-use think\sdk\alibaba\nacos\v2\request\discovery\instance\NacosDiscoveryInstanceModifyRequest;
-use think\sdk\alibaba\nacos\v2\request\discovery\instance\NacosDiscoveryInstanceRegistrationRequest;
-use think\sdk\alibaba\nacos\v2\request\discovery\instance\NacosDiscoveryInstanceSignOutRequest;
+use think\sdk\alibaba\nacos\v2\event\NacosConfigChangeEvent;
+use think\sdk\alibaba\nacos\v2\request\config\cs\NacosConfigQueryRequest;
+use think\sdk\alibaba\nacos\v2\request\discovery\instance\ns\NacosDiscoveryInstanceBeatRequest;
+use think\sdk\alibaba\nacos\v2\request\discovery\instance\ns\NacosDiscoveryInstanceDeleteRequest;
+use think\sdk\alibaba\nacos\v2\request\discovery\instance\ns\NacosDiscoveryInstanceModifyRequest;
+use think\sdk\alibaba\nacos\v2\request\discovery\instance\ns\NacosDiscoveryInstanceRegistrationRequest;
+use think\sdk\alibaba\nacos\v2\request\discovery\instance\ns\NacosDiscoveryInstanceUpdateHealthRequest;
+use think\sdk\alibaba\nacos\v2\response\common\BoolResultNacosResponse;
 
 class Nacos
 {
     private NacosConfig $config;
     private NacosTokenManager $tokenManager;
 
-    private string $server_ip;
-    private string $server_port;
-
-    public function __construct()
-    {
-        $this->config = NacosConfig::getInstance();
-    }
-
-    public function init(): Nacos
-    {
-        if ($this->getConfig()->isEnableAuth()) {
-            $this->tokenManager = NacosTokenManager::getInstance();
-        }
-
-        return $this;
-    }
+    private bool $listening = false;
 
     /**
-     * @param string $server_ip 服务当前IP地址，不能填写如127.x.x.x、localhost、:::的本机地址
-     * @param int $server_port 服务当前端口
-     * @param array $params 扩展参数
-     * @return void
-     * @see https://nacos.io/zh-cn/docs/open-api.html 服务发现->注册实例
+     * @param NacosConfig|null $config Nacos配置，如需额外配置可使用NacosConfig::getInstance()获取
+     * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 服务发现->注册实例
      */
-    public function register(string $server_ip, int $server_port, array $params = []): Nacos
+    public function __construct($config = null)
     {
-        $this->server_ip = $server_ip;
-        $this->server_port = $server_port;
+        $this->config = $config ?: NacosConfig::getInstance();
+        $this->tokenManager = NacosTokenManager::getInstance();
+    }
+
+    public function register(): Nacos
+    {
         $config = $this->getConfig();
         (new NacosDiscoveryInstanceRegistrationRequest(
             $config->getName(),
-            $server_ip,
-            $server_port,
-            $params
+            $this->getServerIp(),
+            $this->getServerPort(),
+            $this->getServerParams()
         ))->request()->requireSuccess();
+        Log::info('已将' . $this->getServerIp() . ':' . $this->getServerPort() . '注册到Nacos。');
         return $this;
     }
 
     /**
-     * @param callable $configChangeCallback 配置变更回调函数
-     * @param int $longPullingTimeout 长轮询超时时间，单位毫秒
-     * @return callable 取消监听回调函数
+     * 在应用初始化时自动注册
+     * 添加值：
+     * ```
+     * 'AppInit'  => [
+     *      'think\sdk\alibaba\nacos\v2\Nacos',
+     * ],
+     * ```
+     * @see https://doc.thinkphp.cn/v8_0/event.html 添加方法
      */
-    public function listen(
-        callable $configChangeCallback,
-        int      $longPullingTimeout = 30000
-    )
+    public function handle($event): void
     {
-        $loop = true;
+        $this->register();
+    }
+
+    public function loadNacosConfig(): string
+    {
+        $config_string_raw = (new NacosConfigQueryRequest(
+            $this->config->getDataId(),
+            $this->config->getGroup())
+        )
+            ->paramNamespaceId($this->config->getNamespace())
+            ->request()
+            ->getData();
+        if($config_string_raw == 'config data not exist') return '';
+        return $config_string_raw;
+    }
+
+    public function beat(string $beat = '{}'): bool
+    {
+        return (new NacosDiscoveryInstanceBeatRequest(
+            $this->config->getName(),
+            $this->getServerIp(),
+            $this->getServerPort(),
+            $beat,
+        ))
+            ->paramNamespaceId($this->config->getNamespace())
+            ->paramGroupName($this->config->getGroup())
+            ->request()
+            ->isSuccess();
+    }
+
+    public function healthy(bool $healthy = true): bool
+    {
+        return (new NacosDiscoveryInstanceUpdateHealthRequest(
+            $this->config->getName(),
+            $this->getServerIp(),
+            $this->getServerPort(),
+            $healthy,
+        ))
+            ->paramNamespaceId($this->config->getNamespace())
+            ->paramGroupName($this->config->getGroup())
+            ->request()
+            ->isSuccess();
+    }
+
+    /**
+     * 开始监听配置变更，
+     * 如需获取配置变更，请监听nacosConfigChange事件，如：
+     *  ```
+     *  Event::listen(\think\sdk\alibaba\nacos\v2\event\NacosConfigChangeEvent::class, function ($config) {
+     *      Log::debug('think-nacos-sdk: nacosConfigChange event. config=' . "\n" . $config);
+     *  }
+     *  ```
+     * 如需停止监听，请使用 $nacos -> cancelListening();
+     * @return $this
+     */
+    public function listen(): Nacos
+    {
+        $this->listening = true;
         $contentMD5 = '';
-        while ($loop) {
-            $response = (new NacosConfigListenRequest())
-                ->with(
-                    $this->config->getDataId(),
-                    $this->config->getGroup(),
-                    $contentMD5,
-                    $this->config->getNamespace()
-                )
-                ->build()
-                ->longPullingTimeout($longPullingTimeout)
-                ->request();
-            $config = $response->getData();
-            if ($config) {
-                $contentMD5 = md5($config);
-                if (is_callable($configChangeCallback)) {
-                    $configChangeCallback($config);
+        while ($this->listening) {
+            try {
+                Log::debug('think-nacos-sdk: listen config.');
+                $config = $this->loadNacosConfig();
+                if ($config) {
+                    $new_contentMD5 = md5($config);
+                    if ($new_contentMD5 != $contentMD5) {
+                        Log::debug('think-nacos-sdk: config changed. md5=' . $new_contentMD5 . ' config=' . "\n" . $config);
+                        $contentMD5 = $new_contentMD5;
+                        Event::trigger(NacosConfigChangeEvent::class, $config);
+                    }
                 }
+                if ($this->beat()) {
+                    Log::debug('think-nacos-sdk: beat success.');
+                } else {
+                    Log::debug('think-nacos-sdk: beat failed.');
+                }
+                sleep(1);
+            } catch (\Exception $exception) {
+                Log::error('think-nacos-sdk: listen error: ' . $exception->getMessage());
             }
-
-            (new NacosDiscoveryInstanceBeatRequest(
-                $this->config->getName(),
-                $this->server_ip,
-                $this->server_port,
-            ))->request();
         }
-
-        return function () use (&$loop) {
-            $loop = false;
-        };
+        return $this;
     }
 
     /**
      * @param array $params 扩展参数
      * @return void
-     * @see https://nacos.io/zh-cn/docs/open-api.html#2.2 服务发现->注销实例
+     * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html#2.2 服务发现->注销实例
      */
-    public function sign_out(array $params = []): void
+    public function signOut(array $params = []): void
     {
         $config = $this->getConfig();
-        (new NacosDiscoveryInstanceSignOutRequest(
+        (new NacosDiscoveryInstanceDeleteRequest(
             $config->getName(),
-            $this->server_ip,
-            $this->server_port,
+            $this->getServerIp(),
+            $this->getServerPort(),
             $params
         ))->request();
     }
 
     /**
-     * @param string $server_ip 服务当前IP地址，不能填写如127.x.x.x、localhost、:::的本机地址
-     * @param int $server_port 服务当前端口
      * @param array $params 扩展参数
-     * @return response\common\OkResultNacosResponse
-     * @see https://nacos.io/zh-cn/docs/open-api.html 服务发现->修改实例
+     * @return BoolResultNacosResponse
+     * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 服务发现->修改实例
      */
-    public function modify_instance(string $server_ip, int $server_port, array $params = []): response\common\OkResultNacosResponse
+    public function modify_instance(array $params): BoolResultNacosResponse
     {
         $config = $this->getConfig();
         return (new NacosDiscoveryInstanceModifyRequest(
             $config->getName(),
-            $server_ip,
-            $server_port,
+            $this->getServerIp(),
+            $this->getServerPort(),
         ))->params($params, true)->request();
     }
 
@@ -137,5 +180,30 @@ class Nacos
     public function getTokenManager(): NacosTokenManager
     {
         return $this->tokenManager;
+    }
+
+    public function getServerIp(): string
+    {
+        return $this->config->getServerIp();
+    }
+
+    public function getServerPort(): string
+    {
+        return $this->config->getServerPort();
+    }
+
+    public function getServerParams(): array
+    {
+        return $this->config->getServerParams();
+    }
+
+    /**
+     * @param bool $listening 是否监听配置变更
+     * @return $this
+     */
+    public function cancelListening(bool $listening): Nacos
+    {
+        $this->listening = $listening;
+        return $this;
     }
 }

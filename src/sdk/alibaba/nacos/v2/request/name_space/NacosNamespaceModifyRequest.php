@@ -8,34 +8,44 @@ use think\sdk\alibaba\nacos\v2\response\common\BoolResultNacosResponse;
 /**
  * 修改命名空间。
  * @package think\sdk\alibaba\nacos\v2\request\discovery\instance
- * @see https://nacos.io/zh-cn/docs/open-api.html 命名空间->修改命名空间
+ * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 命名空间->修改命名空间
  */
 class NacosNamespaceModifyRequest extends AbstractNacosRequest
 {
     protected string $requestName = '命名空间->修改命名空间';
-    protected string $uri = '/nacos/v1/console/namespaces';
+    protected string $uri = '/nacos/v2/console/namespace';
     protected string $method = 'PUT';
     protected bool $is_param_in_body = true;
 
     protected array $requireParams = [
-        'namespace'	=> '命名空间ID',
-        'namespaceShowName'	=> '命名空间名',
-        'namespaceDesc'	=> '命名空间描述',
+        'namespace' => '命名空间ID',
+        'namespaceShowName' => '命名空间名',
     ];
-    protected array $optionalParams = [];
+    protected array $optionalParams = [
+        'namespaceDesc' => '命名空间描述'
+    ];
 
-    public function __construct(string $namespace, string $namespaceShowName, string $namespaceDesc)
+    public function __construct(string $namespace, string $namespaceShowName)
     {
         self::build_params([
             'namespace' => $namespace,
             'namespaceShowName' => $namespaceShowName,
-            'namespaceDesc' => $namespaceDesc,
         ]);
     }
 
     public function request(array $addition_params = []): BoolResultNacosResponse
     {
         list($response, $response_body) = $this->doRequest($addition_params);
-        return new BoolResultNacosResponse($response_body, $response);
+        return new BoolResultNacosResponse($response, $response_body);
+    }
+
+    /**
+     * @param string $namespaceDesc 命名空间描述
+     * @return $this
+     */
+    public function paramNamespaceDesc(string $namespaceDesc): NacosNamespaceModifyRequest
+    {
+        $this->params['namespaceDesc'] = $namespaceDesc;
+        return $this;
     }
 }
