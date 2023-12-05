@@ -95,9 +95,7 @@ public function register_nacos()
 #### 2.2.2. 当填写配置文件时
 ```php
 $nacos = new \think\sdk\alibaba\nacos\v2\Nacos()
-    ->register()            // 注册服务到Nacos
-    ->listen()              // 开始监听（每秒查询更改）
-    ->cancelListening()     // 当需要停止监听时，调用
+    ->register()    // 注册服务到Nacos
     ;
 ```
 
@@ -111,18 +109,14 @@ $config ->setServerIp(gethostbyname(gethostname()));
 // 如监听端口非80，且配置文件未填写，则需要手动设置
 $config ->setServerPort(8080);
 
-$nacos = new \think\sdk\alibaba\nacos\v2\Nacos($config);
-$nacos
-    ->register()            // 注册服务到Nacos
-    ->listen()              // 开始监听（每秒查询更改）
-    ->cancelListening()     // 当需要停止监听时，调用
+$nacos = new \think\sdk\alibaba\nacos\v2\Nacos()
+    ->register()    // 注册服务到Nacos
     ;
-// 发送一次心跳
-$nacos->beat();
 ```
 
 ### 2.3. 监听配置更改
 
+#### 2.3.1 配置监听事件
 ```php
 \think\Event::listen(
     \think\sdk\alibaba\nacos\v2\event\NacosConfigChangeEvent::class, 
@@ -130,6 +124,14 @@ $nacos->beat();
         dump('nacos config change', $raw_config);
     }
 );
+```
+
+#### 2.3.2 在单独一个线程中执行
+```php
+$nacos = new \think\sdk\alibaba\nacos\v2\Nacos()
+    ->listen()              // 开始监听（每秒查询更改）
+    ->cancelListening()     // 当需要停止监听时，调用
+    ;
 ```
 
 启动方式：
