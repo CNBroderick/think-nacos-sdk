@@ -2,7 +2,6 @@
   "name": "topthink/think-nacos-sdk",
   "description": "thinkphp nacos 2.x sdk for thinkphp ^8.0.3",
   "license": "Apache-2.0",
-  "version": "0.0.1",
   "homepage": "https://github.com/CNBroderick/think-nacos-sdk",
   "authors": [
     {
@@ -42,5 +41,11 @@
     "thinkphp",
     "nacos",
     "think-nacos-sdk"
+  ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/CNBroderick/think-nacos-sdk.git"
+    }
   ]
 }
