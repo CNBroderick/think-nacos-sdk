@@ -31,7 +31,7 @@ return [
         'enabled' => true,
         'healthy' => true,
         'metadata' => [
-            'preserved.register.source' => 'ThinkPHP/8.0.3 think-nacos-sdk/0.0.1'
+            'preserved.register.source' => 'ThinkPHP/'.\think\facade\App::version().' think-nacos-sdk/0.0.1'
         ],
     ],
 

@@ -107,16 +107,21 @@ class NacosConfig
         $this->logLevel = $config['logLevel'] ?: 'INFO';
         $this->isDebug = !array_key_exists('isDebug', $config) && !!$config['isDebug'];
 
-        $this ->server_ip = $config['server_ip'] ?: gethostbyname(gethostname());
-        $this ->server_port = $config['server_port'] ?: 80;
-        $this ->server_params = $config['server_params'] ?: [
+        $this->server_ip = $config['server_ip'] ?: gethostbyname(gethostname());
+        $this->server_port = $config['server_port'] ?: 80;
+        $this->server_params = $config['server_params'] ?: [
             'weight' => 1,
             'enabled' => true,
             'healthy' => true,
             'metadata' => [
-                'preserved.register.source' => 'ThinkPHP/8.0.3 think-nacos-sdk/0.0.1'
+                'preserved.register.source' => $this->preservedRegisterSource(),
             ],
         ];
+    }
+
+    public function preservedRegisterSource()
+    {
+        return 'ThinkPHP/' . \think\facade\App::version() . ' think-nacos-sdk/0.0.1';
     }
 
     public function getCacheKey($type): string
@@ -155,6 +160,9 @@ class NacosConfig
             'group' => $this->group,
             'logLevel' => $this->logLevel,
             'isDebug' => $this->isDebug,
+            'server_ip' => $this->server_ip,
+            'server_port' => $this->server_port,
+            'server_params' => $this->server_params,
         ]);
     }
 

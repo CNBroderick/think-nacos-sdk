@@ -34,6 +34,9 @@ class Nacos
 
     public function register(): Nacos
     {
+        if (!$this->getServerIp() || !$this->getServerPort()) {
+            return $this;
+        }
         $config = $this->getConfig();
         (new NacosDiscoveryInstanceRegistrationRequest(
             $config->getName(),
@@ -69,7 +72,7 @@ class Nacos
             ->paramNamespaceId($this->config->getNamespace())
             ->request()
             ->getData();
-        if($config_string_raw == 'config data not exist') return '';
+        if ($config_string_raw == 'config data not exist') return '';
         return $config_string_raw;
     }
 

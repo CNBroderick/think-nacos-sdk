@@ -56,7 +56,15 @@ class NacosHttpClient
         if (is_array($params)) {
             $param_list = [];
             foreach ($params as $key => $value) {
-                $param_list[] = urlencode($key) . '=' . urlencode($value);
+                $item = urlencode($key) . '=';
+                if ($value === false) {
+                    $item .= 'false';
+                } if(is_array($value)){
+                    $item .= urlencode(json_encode($value));
+                } else {
+                    $item .= urlencode($value);
+                }
+                $param_list[] = $item;
             }
             return join('&', $param_list);
         }
@@ -89,12 +97,12 @@ class NacosHttpClient
      */
     public function request(string $method): array
     {
-        Log::info('nacos-sdk-request'. json_encode([
-            'url' => $this->url,
-            'method' => $method,
-            'body' => $this->body,
-            'headers' => $this->headers,
-        ]));
+        Log::info('nacos-sdk-request' . json_encode([
+                'url' => $this->url,
+                'method' => $method,
+                'body' => $this->body,
+                'headers' => $this->headers,
+            ]));
         $method = strtoupper($method);
 
         $ch = curl_init();
@@ -139,7 +147,7 @@ class NacosHttpClient
         $response = curl_getinfo($ch);
         curl_close($ch);
 
-        Log::info('nacos-sdk-request'. json_encode([
+        Log::info('nacos-sdk-request' . json_encode([
                 'url' => $this->url,
                 'method' => $method,
                 'body' => $this->body,
