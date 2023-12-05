@@ -3,45 +3,72 @@ ThinkPHP Nacos 2.x 扩展
 
 ThinkPHP Nacos 2.x 扩展
 
-## 安装
+## 1. 安装
 
-### 命令行部署
+### 1.1 命令行部署
 composer require topthink/think-nacos-sdk
 > 还未发布，暂时无法使用
 
-### 手动部署
+### 1.2 手动部署
 
 composer.json 中添加如下配置
 
-1. 仓库
-    ```json
+#### 1.2.1. 仓库
+```json
+{
+  "repositories": [
     {
-      "repositories": [
-        {
-          "type": "path",
-          "url": "path/to/think-nacos-sdk",
-          "options": {
-            "versions": {
-              "topthink/think-nacos-sdk": "0.0.1"
-            }
-          }
+      "type": "path",
+      "url": "path/to/think-nacos-sdk",
+      "options": {
+        "versions": {
+          "topthink/think-nacos-sdk": "0.0.1"
         }
-      ]
-    }
-    ```
-
-2. 依赖
-    ```json
-    {
-      "require": {
-        "topthink/think-nacos-sdk": "0.0.1"
       }
     }
-    ```
+  ]
+}
+```
 
-## 配置
+#### 1.2.2. 依赖
+```json
+{
+  "require": {
+    "topthink/think-nacos-sdk": "0.0.1"
+  }
+}
+```
 
-### 通过HTTP注册
+## 2. 配置
+
+### 2.1. 自动注册
+> ThinkPHP框架在应用初始化时
+
+#### 2.1.1. 参考文档
+
+[ThinkPHP 文档 -> 架构 -> 事件 -> 内置事件 ](https://doc.thinkphp.cn/v8_0/event.html)
+
+#### 2.1.2. 正确填写相关配置 
+
+在config/nacos.php 中正确填写服务器和Nacos的相关信息
+
+#### 2.1.3. 在app/event.php中填写
+```php
+// 事件定义文件
+return [
+    // ......
+    'listen'    => [
+        'AppInit'  => [
+            'think\sdk\alibaba\nacos\v2\Nacos', //推荐放到末尾
+        ],
+    ],
+    // ......
+];
+```
+
+### 2.2. 手动注册
+
+#### 2.2.1. 通过HTTP注册
 
 ```php
 public function register_nacos()
@@ -65,7 +92,7 @@ public function register_nacos()
 }
 ```
 
-### 当填写配置文件时
+#### 2.2.2. 当填写配置文件时
 ```php
 $nacos = new \think\sdk\alibaba\nacos\v2\Nacos()
     ->register()            // 注册服务到Nacos
@@ -74,7 +101,7 @@ $nacos = new \think\sdk\alibaba\nacos\v2\Nacos()
     ;
 ```
 
-### 动态配置
+#### 2.2.3. 动态配置
 
 ```php
 // 如需动态配置Nacos，请使用此方法获取
@@ -94,7 +121,7 @@ $nacos
 $nacos->beat();
 ```
 
-### 监听配置更改
+### 2.3. 监听配置更改
 
 ```php
 \think\Event::listen(
@@ -110,7 +137,7 @@ $nacos->beat();
 > 此接口需要设置不自动关闭，否则会在自动关闭时停止监听。<br>
 > 此接口需要自行实现，不在本扩展内实现。
 
-## 目录结构
+## 3. 目录结构
 
 ```yaml
 -sdk:
@@ -126,6 +153,6 @@ $nacos->beat();
             -util: 工具类
 ```
 
-## 其他
+## 4. 其他
 
 任何BUG或者建议，欢迎提交issue或者PR。
