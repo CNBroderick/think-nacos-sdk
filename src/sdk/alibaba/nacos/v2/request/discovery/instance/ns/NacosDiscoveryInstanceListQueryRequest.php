@@ -2,6 +2,7 @@
 
 namespace think\sdk\alibaba\nacos\v2\request\discovery\instance\ns;
 
+use think\sdk\alibaba\nacos\v2\Nacos;
 use think\sdk\alibaba\nacos\v2\request\AbstractNacosRequest;
 use think\sdk\alibaba\nacos\v2\response\discovery\instance\NacosDiscoveryInstanceListQueryResponse;
 
@@ -15,11 +16,6 @@ class NacosDiscoveryInstanceListQueryRequest extends AbstractNacosRequest
     protected string $requestName = '服务发现->查询指定服务的实例列表';
     protected string $uri = '/nacos/v2/ns/instance/list';
     protected string $method = 'GET';
-
-    protected array $headers = [
-        'User-Agent' => 'ThinkPHP/8.0 think-nacos-sdk/0.0.1',
-        'Client-Version' => 'ThinkPHP/8.0 think-nacos-sdk/0.0.1',
-    ];
 
     protected array $requireParams = [
         'serviceName' => '服务名',
@@ -39,6 +35,8 @@ class NacosDiscoveryInstanceListQueryRequest extends AbstractNacosRequest
      */
     public function __construct($serviceName)
     {
+        $this ->headers['User-Agent'] = Nacos::getUserAgent();
+        $this ->headers['Client-Version'] = Nacos::getClientVersions();
         self::build_params([
             'serviceName' => $serviceName,
         ]);

@@ -31,7 +31,7 @@ return [
         'enabled' => true,
         'healthy' => true,
         'metadata' => [
-            'preserved.register.source' => 'ThinkPHP/'.\think\facade\App::version().' think-nacos-sdk/0.0.1'
+            'preserved.register.source' => \think\sdk\alibaba\nacos\v2\Nacos::getUserAgent()
         ],
     ],
 

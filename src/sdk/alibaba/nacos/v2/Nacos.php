@@ -2,6 +2,7 @@
 
 namespace think\sdk\alibaba\nacos\v2;
 
+use Composer\InstalledVersions;
 use think\facade\Event;
 use think\facade\Log;
 use think\sdk\alibaba\nacos\v2\auth\NacosTokenManager;
@@ -17,6 +18,7 @@ use think\sdk\alibaba\nacos\v2\response\common\BoolResultNacosResponse;
 
 class Nacos
 {
+
     private NacosConfig $config;
     private NacosTokenManager $tokenManager;
 
@@ -208,5 +210,34 @@ class Nacos
     {
         $this->listening = $listening;
         return $this;
+    }
+
+    public static function getVersion(): string
+    {
+        return InstalledVersions::getPrettyVersion('topthink/think-nacos-sdk') ?: '0.0.1';
+    }
+
+    public static function getClientVersions()
+    {
+        $userAgentParts = [
+            'PHP/' . phpversion(),                      // PHP 版本（另一种格式）
+            'ThinkPHP/' . \think\facade\App::version(), // ThinkPHP版本
+            'think-nacos-sdk/' . self::getVersion(),    // NacosSDK版本
+        ];
+        return implode(' ', $userAgentParts);
+    }
+
+    public static function getUserAgent()
+    {
+        $userAgentParts = [
+            'Mozilla/5.0',                              // 基础 User-Agent
+            '(' . php_uname('s') . ';',           // 操作系统
+            php_uname('m') . ';',                 // 机器类型（如 x86_64）
+            'rv:' . phpversion() . ')',                 // PHP 版本
+            'PHP/' . phpversion(),                      // PHP 版本（另一种格式）
+            'ThinkPHP/' . \think\facade\App::version(), // ThinkPHP版本
+            'think-nacos-sdk/' . self::getVersion(),    // NacosSDK版本
+        ];
+        return implode(' ', $userAgentParts);
     }
 }

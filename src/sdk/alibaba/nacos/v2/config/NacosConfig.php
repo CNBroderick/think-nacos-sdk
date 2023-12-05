@@ -4,6 +4,7 @@ namespace think\sdk\alibaba\nacos\v2\config;
 
 use think\facade\Cache;
 use think\facade\Config;
+use think\sdk\alibaba\nacos\v2\Nacos;
 
 class NacosConfig
 {
@@ -114,14 +115,9 @@ class NacosConfig
             'enabled' => true,
             'healthy' => true,
             'metadata' => [
-                'preserved.register.source' => $this->preservedRegisterSource(),
+                'preserved.register.source' => Nacos::getUserAgent(),
             ],
         ];
-    }
-
-    public function preservedRegisterSource()
-    {
-        return 'ThinkPHP/' . \think\facade\App::version() . ' think-nacos-sdk/0.0.1';
     }
 
     public function getCacheKey($type): string

@@ -3,6 +3,7 @@
 namespace think\sdk\alibaba\nacos\v2\util;
 
 use think\facade\Log;
+use think\sdk\alibaba\nacos\v2\Nacos;
 
 class NacosHttpClient
 {
@@ -59,7 +60,8 @@ class NacosHttpClient
                 $item = urlencode($key) . '=';
                 if ($value === false) {
                     $item .= 'false';
-                } if(is_array($value)){
+                }
+                if (is_array($value)) {
                     $item .= urlencode(json_encode($value));
                 } else {
                     $item .= urlencode($value);
@@ -97,7 +99,7 @@ class NacosHttpClient
      */
     public function request(string $method): array
     {
-        Log::info('nacos-sdk-request' . json_encode([
+        Log::debug('nacos-sdk-request' . json_encode([
                 'url' => $this->url,
                 'method' => $method,
                 'body' => $this->body,
@@ -119,8 +121,13 @@ class NacosHttpClient
             curl_setopt($ch, CURLOPT_POSTFIELDS, $this->body);
             $headers[] = 'Content-Type: application/x-www-form-urlencoded';
         }
+        if (isset($this->headers['User-Agent'])) {
+            $this->headers['User-Agent'] = Nacos::getUserAgent();
+        }
         if ($this->headers) {
-            $headers = array_merge($headers, $this->headers);
+            foreach ($this->headers as $header_key => $header_value) {
+                $headers[] = $header_key . ': ' . $header_value;
+            }
         }
 
         if ($headers) {
@@ -147,7 +154,7 @@ class NacosHttpClient
         $response = curl_getinfo($ch);
         curl_close($ch);
 
-        Log::info('nacos-sdk-request' . json_encode([
+        Log::debug('nacos-sdk-request' . json_encode([
                 'url' => $this->url,
                 'method' => $method,
                 'body' => $this->body,
