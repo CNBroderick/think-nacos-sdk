@@ -1,13 +1,14 @@
 <?php
 
-namespace think\sdk\alibaba\nacos\v2\request\client;
+namespace think\sdk\alibaba\nacos\v2\request\discovery\client;
 
 use think\sdk\alibaba\nacos\v2\request\AbstractNacosRequest;
-use think\sdk\alibaba\nacos\v2\response\client\NacosClientPublisherServiceListResponse;
+use think\sdk\alibaba\nacos\v2\response\discovery\client\NacosClientPublisherServiceListResponse;
 
 /**
  * 查询注册指定服务的客户端信息
- * @package think\sdk\alibaba\nacos\v2\request\discovery\instance
+ *
+ * @package think\sdk\alibaba\nacos\v2\request\discovery\client
  * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 服务发现->查询注册指定服务的客户端信息
  */
 class NacosClientPublisherServiceListRequest extends AbstractNacosRequest

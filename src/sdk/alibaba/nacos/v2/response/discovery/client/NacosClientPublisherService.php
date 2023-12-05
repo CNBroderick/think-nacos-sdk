@@ -1,6 +1,6 @@
 <?php
 
-namespace think\sdk\alibaba\nacos\v2\response\client;
+namespace think\sdk\alibaba\nacos\v2\response\discovery\client;
 
 class NacosClientPublisherService
 {

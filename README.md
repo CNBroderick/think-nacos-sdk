@@ -148,7 +148,18 @@ $nacos->beat();
             -auth: 鉴权相关
             -config: 配置相关
             -enum: 枚举类
-            -request: 全部请求接口
+            -event: 事件类
+            -request: # 请求类 https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html
+              -auth: 权限认证 https://nacos.io/zh-cn/docs/v2/guide/user/auth.html
+              -cluster: 集群管理 
+              -config: 配置管理
+              -discovery: # 服务发现
+                -client: 客户端相关
+                -instance: 实例相关
+                -service: 服务相关
+                -system: 系统相关
+              -loader: 连接负载管理
+              -name_space: 命名空间
             -response: 全部响应数据类
             -util: 工具类
 ```

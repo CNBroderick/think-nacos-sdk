@@ -1,9 +1,9 @@
 <?php
 
-namespace think\sdk\alibaba\nacos\v2\request\client;
+namespace think\sdk\alibaba\nacos\v2\request\discovery\client;
 
 use think\sdk\alibaba\nacos\v2\request\AbstractNacosRequest;
-use think\sdk\alibaba\nacos\v2\response\client\NacosClientDetailResponse;
+use think\sdk\alibaba\nacos\v2\response\discovery\client\NacosClientDetailResponse;
 
 /**
  * 查询指定客户端的详细信息
@@ -11,7 +11,7 @@ use think\sdk\alibaba\nacos\v2\response\client\NacosClientDetailResponse;
  * 客户端不存在时会报错
  *
  * 只有当clientType为connection时，会显示connectType，appName和appName字段
- * @package think\sdk\alibaba\nacos\v2\request\discovery\instance
+ * @package think\sdk\alibaba\nacos\v2\request\discovery\client
  * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 服务发现->查询客户端信息
  */
 class NacosClientDetailRequest extends AbstractNacosRequest

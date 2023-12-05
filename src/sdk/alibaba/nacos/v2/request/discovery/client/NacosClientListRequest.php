@@ -1,6 +1,6 @@
 <?php
 
-namespace think\sdk\alibaba\nacos\v2\request\client;
+namespace think\sdk\alibaba\nacos\v2\request\discovery\client;
 
 use think\sdk\alibaba\nacos\v2\request\AbstractNacosRequest;
 use think\sdk\alibaba\nacos\v2\response\common\JsonNacosResponse;
@@ -13,7 +13,8 @@ use think\sdk\alibaba\nacos\v2\response\common\JsonNacosResponse;
  * 对于1.x版本，每个实例会建立两个基于ip+port的客户端，分别对应实例注册与服务订阅，clientId格式为 ip:port#ephemeral
  *
  * 对于2.x版本的nacos client, 每个实例会建立一个RPC连接，对应一个基于RPC连接的客户端，兼具注册与订阅功能，clientId 格式为time_ip_port
- * @package think\sdk\alibaba\nacos\v2\request\discovery\instance
+ *
+ * @package think\sdk\alibaba\nacos\v2\request\discovery\client
  * @see https://nacos.io/zh-cn/docs/v2/guide/user/open-api.html 服务发现->查询客户端列表
  */
 class NacosClientListRequest extends AbstractNacosRequest
