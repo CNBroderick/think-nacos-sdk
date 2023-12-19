@@ -214,7 +214,7 @@ class Nacos
 
     public static function getVersion(): string
     {
-        return InstalledVersions::getPrettyVersion('topthink/think-nacos-sdk') ?: '0.0.1';
+        return InstalledVersions::getPrettyVersion('bklab/think-nacos-sdk') ?: '0.0.1';
     }
 
     public static function getClientVersions()
