@@ -6,7 +6,7 @@ ThinkPHP Nacos 2.x 扩展
 ## 1. 安装
 
 ### 1.1 命令行部署
-composer require topthink/think-nacos-sdk
+composer require bklab/think-nacos-sdk
 > 还未发布，暂时无法使用
 
 ### 1.2 手动部署
@@ -22,7 +22,7 @@ composer.json 中添加如下配置
       "url": "path/to/think-nacos-sdk",
       "options": {
         "versions": {
-          "topthink/think-nacos-sdk": "0.0.1"
+          "bklab/think-nacos-sdk": "0.0.1"
         }
       }
     }
@@ -34,7 +34,7 @@ composer.json 中添加如下配置
 ```json
 {
   "require": {
-    "topthink/think-nacos-sdk": "0.0.1"
+    "bklab/think-nacos-sdk": "0.0.1"
   }
 }
 ```

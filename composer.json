@@ -1,5 +1,5 @@
 {
-  "name": "topthink/think-nacos-sdk",
+  "name": "bklab/think-nacos-sdk",
   "description": "thinkphp nacos 2.x sdk for thinkphp ^8.0.3",
   "license": "Apache-2.0",
   "homepage": "https://github.com/CNBroderick/think-nacos-sdk",
