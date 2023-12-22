@@ -17,10 +17,10 @@ class JsonNacosResponse extends AbstractNacosResponse
         parent::__construct($response, $body);
         $res = json_decode($body, true);
         if ($res) {
-            $this->code = $res['code'];
+            $this->code = $res['code'] ?? 0;
             $this->success = $this->httpCode == 200 && $this->code === 0;
             $this->message = $this->success ? '' : 'think-nacos-sdk：请求失败：[' . $this->httpCode . ']' . (NacosErrorCodeEnum::from($this->httpCode ?: $res['message']));
-            $this->data = $res['data'];
+            $this->data = $res['data'] ?? null;
         } else {
             Log::error('think-nacos-sdk:JsonNacosResponse:解析请求内容失败。' . $body);
         }

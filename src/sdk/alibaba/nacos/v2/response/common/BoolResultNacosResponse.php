@@ -7,7 +7,7 @@ class BoolResultNacosResponse extends JsonNacosResponse
 
     public function isReturnTure(): bool
     {
-        return $this->data;
+        return !!$this->data;
     }
 
 }
