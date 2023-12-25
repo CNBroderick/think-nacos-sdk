@@ -62,7 +62,12 @@ class Nacos
      */
     public function handle($event): void
     {
-        $this->register();
+        try {
+            $this->register();
+            Log::error('注册到Nacos成功。');
+        } catch (\Exception $exception) {
+            Log::error('注册到Nacos失败，原因：' . $exception->getMessage());
+        }
     }
 
     public function loadNacosConfig(): string
