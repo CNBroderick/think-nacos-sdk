@@ -64,7 +64,6 @@ class Nacos
     {
         try {
             $this->register();
-            Log::error('注册到Nacos成功。');
         } catch (\Exception $exception) {
             Log::error('注册到Nacos失败，原因：' . $exception->getMessage());
         }
